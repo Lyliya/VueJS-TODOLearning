@@ -1,5 +1,5 @@
 <template>
-  <Navbar />
+  <Navbar :username="user.username" />
   <n-element class="container" tag="div">
     <!-- <div
       v-for="task in tasks"
@@ -25,12 +25,16 @@
           :class="task.done ? 'done' : ''"
         >
           <template #prefix>
-            <n-checkbox size="large" v-model:checked="task.done" />
+            <n-checkbox
+              size="large"
+              v-model:checked="task.done"
+              @click="updateTask(task.id)"
+            />
           </template>
           <n-thing>
             <input
               v-model="task.title"
-              @keyup.enter="updateTaskTitle(task.id)"
+              @keyup.enter="updateTask(task.id)"
               :class="task.done ? 'done' : ''"
             />
           </n-thing>
@@ -125,7 +129,7 @@ export default {
       return res.json();
     },
 
-    async updateTaskTitle(taskId) {
+    async updateTask(taskId) {
       // If not logged in, redirect to login
       if (!this.token) this.$router.push("/login");
 
@@ -134,7 +138,8 @@ export default {
 
       // Create body for the request
       const body = {
-        title: task.title
+        title: task.title,
+        done: task.done
       };
       // Send PUT request for this task
       const res = await fetch(`http://localhost:3000/task/${taskId}`, {
@@ -227,7 +232,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 20px;
 }
 input {
   border: none;
